@@ -1,0 +1,506 @@
+{
+  "name": "tool_create_order",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "chat_id "
+            },
+            {
+              "name": "client_name"
+            },
+            {
+              "name": "cake_count",
+              "type": "number"
+            },
+            {
+              "name": "requested_date"
+            },
+            {
+              "name": "cake_type"
+            },
+            {
+              "name": "total_price ",
+              "type": "number"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        -208
+      ],
+      "id": "91c2cc89-00a6-4198-82c4-2b6b3f2a0f8a",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1rM5VHtWYRG0PtTMl9CNhOP6iOyOYAerKMI3o-X6MS68",
+          "mode": "list",
+          "cachedResultName": "CRM Кондитерська",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rM5VHtWYRG0PtTMl9CNhOP6iOyOYAerKMI3o-X6MS68/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2104090502,
+          "mode": "list",
+          "cachedResultName": "orders",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rM5VHtWYRG0PtTMl9CNhOP6iOyOYAerKMI3o-X6MS68/edit#gid=2104090502"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "chat_id": "={{ $json.chat_id }}",
+            "client_name": "={{ $json.client_name }}",
+            "cake_count": "={{ $json.cake_count }}",
+            "requested_date": "={{ $json.requested_date }}",
+            "total_price": "={{ $json.total_price }}",
+            "status": "new"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "chat_id",
+              "displayName": "chat_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "client_name",
+              "displayName": "client_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "cake_count",
+              "displayName": "cake_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "requested_date",
+              "displayName": "requested_date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "total_price",
+              "displayName": "total_price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "kp_link",
+              "displayName": "kp_link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        224,
+        -208
+      ],
+      "id": "4f0dd13c-1207-406d-a8a0-55098f445723",
+      "name": "Save Order",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "SzlUfd50Vd8nIlPp",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const cakeCount = $('When Executed by Another Workflow').item.json.cake_count;\nconst recipes = $input.all();\n\nreturn recipes.map(recipe => ({\n  json: {\n    name: recipe.json.ingredient,\n    amount: recipe.json.amount_per_cake * cakeCount\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        -208
+      ],
+      "id": "96bee3c0-4d6f-4e5a-9267-6bf0be7063f6",
+      "name": "Calculate Ingredients"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1rM5VHtWYRG0PtTMl9CNhOP6iOyOYAerKMI3o-X6MS68",
+          "mode": "list",
+          "cachedResultName": "CRM Кондитерська",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rM5VHtWYRG0PtTMl9CNhOP6iOyOYAerKMI3o-X6MS68/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1651932930,
+          "mode": "list",
+          "cachedResultName": "recipes",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rM5VHtWYRG0PtTMl9CNhOP6iOyOYAerKMI3o-X6MS68/edit#gid=1651932930"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "cake_type",
+              "lookupValue": "={{ $('When Executed by Another Workflow').item.json.cake_type }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        448,
+        -208
+      ],
+      "id": "1fadfac1-9e00-42ee-96d4-0639a0a279d8",
+      "name": "Get Recipe",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "SzlUfd50Vd8nIlPp",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1rM5VHtWYRG0PtTMl9CNhOP6iOyOYAerKMI3o-X6MS68",
+          "mode": "list",
+          "cachedResultName": "CRM Кондитерська",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rM5VHtWYRG0PtTMl9CNhOP6iOyOYAerKMI3o-X6MS68/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1547664690,
+          "mode": "list",
+          "cachedResultName": "inventory",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rM5VHtWYRG0PtTMl9CNhOP6iOyOYAerKMI3o-X6MS68/edit#gid=1547664690"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ingredient": "={{ $json.ingredient }}",
+            "in_stock": "={{ $('Get Current Stock').item.json.in_stock - $('Calculate Ingredients').item.json.amount }}"
+          },
+          "matchingColumns": [
+            "ingredient"
+          ],
+          "schema": [
+            {
+              "id": "ingredient",
+              "displayName": "ingredient",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "unit",
+              "displayName": "unit",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "in_stock",
+              "displayName": "in_stock",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "per_cake",
+              "displayName": "per_cake",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "min_level",
+              "displayName": "min_level",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1120,
+        -208
+      ],
+      "id": "ef625a89-3b41-4a61-845b-ffc84122bf7c",
+      "name": "Update Inventory",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "SzlUfd50Vd8nIlPp",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1rM5VHtWYRG0PtTMl9CNhOP6iOyOYAerKMI3o-X6MS68",
+          "mode": "list",
+          "cachedResultName": "CRM Кондитерська",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rM5VHtWYRG0PtTMl9CNhOP6iOyOYAerKMI3o-X6MS68/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1547664690,
+          "mode": "list",
+          "cachedResultName": "inventory",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rM5VHtWYRG0PtTMl9CNhOP6iOyOYAerKMI3o-X6MS68/edit#gid=1547664690"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "ingredient",
+              "lookupValue": "={{ $json.name }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        896,
+        -208
+      ],
+      "id": "9736e019-7058-4db4-b22f-23985e16fa7f",
+      "name": "Get Current Stock",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "SzlUfd50Vd8nIlPp",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "503f9eb1-12f5-49d7-9455-33e53d043812",
+              "leftValue": "={{ $('Get Current Stock').item.json.in_stock - $('Calculate Ingredients').item.json.amount }}",
+              "rightValue": "={{ $('Get Current Stock').item.json.min_level }}",
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1344,
+        -208
+      ],
+      "id": "e4f82fde-9017-416e-b4a8-a2314c156415",
+      "name": "Low Stock?"
+    },
+    {
+      "parameters": {
+        "chatId": "7865617312",
+        "text": "=⚠️ Увага! Закінчується інгредієнт:\n{{ $('Get Current Stock').item.json.ingredient }}\n\nЗалишок: {{ $('Get Current Stock').item.json.in_stock - $('Calculate Ingredients').item.json.amount }} {{ $('Get Current Stock').item.json.unit }}\nМінімум: {{ $('Get Current Stock').item.json.min_level }} {{ $('Get Current Stock').item.json.unit }}\n\nБудь ласка, поповніть запаси! 🛒",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1552,
+        -352
+      ],
+      "id": "af1311fc-8f57-4905-b10d-51c3eb8ea3a4",
+      "name": "Notify Owner - Low Stock",
+      "webhookId": "eee09dfa-3b4a-4893-aed8-2c4aa24954f1",
+      "credentials": {
+        "telegramApi": {
+          "id": "GwAzFoHHrtAfGt6w",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Save Order",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Order": {
+      "main": [
+        [
+          {
+            "node": "Get Recipe",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Recipe": {
+      "main": [
+        [
+          {
+            "node": "Calculate Ingredients",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate Ingredients": {
+      "main": [
+        [
+          {
+            "node": "Get Current Stock",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Current Stock": {
+      "main": [
+        [
+          {
+            "node": "Update Inventory",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Inventory": {
+      "main": [
+        [
+          {
+            "node": "Low Stock?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Low Stock?": {
+      "main": [
+        [
+          {
+            "node": "Notify Owner - Low Stock",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "Dik7xDMT34c2wPOY",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "14518332-4ca0-438f-92b6-a56195aa58e6",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f6e8d2e59f7b88cfcf064ed164493d5859022d1ab8f15aa5d7cd1faf1c0e639c"
+  },
+  "id": "Ptm4saqwGqB75hdE",
+  "tags": []
+}

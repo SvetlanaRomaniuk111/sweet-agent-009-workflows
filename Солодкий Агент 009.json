@@ -1,0 +1,251 @@
+{
+  "name": "Солодкий Агент 009",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -96,
+        -16
+      ],
+      "id": "f749a25b-b330-4603-8cc1-a2fe114c69ef",
+      "name": "Солодкий Агент 009",
+      "webhookId": "cca47646-0b55-46be-9cb0-0ff561701f63",
+      "credentials": {
+        "telegramApi": {
+          "id": "GwAzFoHHrtAfGt6w",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "d06e741b-512d-4d08-a5fb-d578f2d2c04a",
+              "leftValue": "={{ $json.message.chat.id }}",
+              "rightValue": 7865617312,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        128,
+        80
+      ],
+      "id": "0fbe5b18-6791-4f93-9770-eb66f48d6dda",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "xPloNAkhbpDNPGCe",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/xPloNAkhbpDNPGCe",
+          "cachedResultName": "agent_client"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "chat_id": "={{ String($json.message.chat.id) }}",
+            "message": "={{ $json.message.text }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "chat_id",
+              "displayName": "chat_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        352,
+        176
+      ],
+      "id": "0808dbaf-b0d8-4d52-aa55-79080b74afd6",
+      "name": "Call 'agent_client'"
+    },
+    {
+      "parameters": {
+        "operation": "sendChatAction",
+        "chatId": "={{ $json.message.chat.id }}"
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        128,
+        -112
+      ],
+      "id": "ce4c8573-2f2c-4ea9-a07d-c49751f605ca",
+      "name": "Show Typing",
+      "webhookId": "147a77b2-8938-4578-b27c-b7a77d71da44",
+      "credentials": {
+        "telegramApi": {
+          "id": "GwAzFoHHrtAfGt6w",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "N1R0e2MLhIXYVUS0",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/N1R0e2MLhIXYVUS0",
+          "cachedResultName": "agent_owner"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "chat_id": "={{ $json.message.chat.id }}",
+            "message": "={{ $json.message.text }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "chat_id",
+              "displayName": "chat_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number",
+              "removed": false
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        352,
+        -16
+      ],
+      "id": "6ac2cc69-5ef9-4bb5-aa85-4d7511982db3",
+      "name": "Call 'agent_owner'"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Солодкий Агент 009": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Show Typing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Call 'agent_owner'",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Call 'agent_client'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Show Typing": {
+      "main": [
+        []
+      ]
+    },
+    "Call 'agent_owner'": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "Dik7xDMT34c2wPOY",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "92107a26-ad08-4300-9af9-8ac0e877044b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f6e8d2e59f7b88cfcf064ed164493d5859022d1ab8f15aa5d7cd1faf1c0e639c"
+  },
+  "id": "tborKSWAbY5cTkp2",
+  "tags": []
+}

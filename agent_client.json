@@ -1,0 +1,628 @@
+{
+  "name": "agent_client",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "chat_id"
+            },
+            {
+              "name": "message"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "a0f618f5-f1fe-495f-9622-691e6af2f55b",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message }}",
+        "options": {
+          "systemMessage": "=Ти — AI-менеджер кондитерської \"Солодкий Агент 009\".\nСпілкуєшся з клієнтами в Telegram українською мовою.\n\nОСОБИСТІСТЬ:\n- Тепла, привітна, професійна\n- Знаєш все про торти та десерти\n- Відповідаєш на будь-які питання клієнта\n\nCHAT_ID ПОТОЧНОГО КЛІЄНТА:\n{{ $('When Executed by Another Workflow').item.json.chat_id }}\n\nЛОГІКА РОБОТИ:\n\n1. ПОЧАТОК РОЗМОВИ:\n   - Виклич tool_get_client з chat_id\n   - Якщо клієнт знайомий — привітай по імені\n   - Якщо новий — познайом та запитай ім'я\n\n2. ЗАМОВЛЕННЯ ТОРТА:\n   - Виклич tool_get_cake_types — покажи меню\n   - Враховуй алергії клієнта при рекомендації\n   - Дізнайся: яку дату, кількість, побажання\n   - Виклич tool_check_capacity для перевірки дати\n   - Якщо дата зайнята — запропонуй альтернативну\n\n3. ПІДТВЕРДЖЕННЯ ЗАМОВЛЕННЯ:\n   Коли клієнт написав \"Так\", \"Підтверджую\" або будь-яке підтвердження — ОБОВ'ЯЗКОВО виконай ВСІ 4 кроки по порядку:\n\n   КРОК 1: Виклич tool_create_order з параметрами:\n   - chat_id: поточний chat_id клієнта\n   - client_name: ім'я клієнта\n   - cake_count: кількість тортів\n   - requested_date: дата у форматі YYYY-MM-DD\n   - cake_type: назва торта\n   - total_price: загальна сума\n\n   КРОК 2: Виклич tool_get_cake_types щоб отримати doc_template_id для обраного торта\n\n   КРОК 3: Виклич tool_generate_kp з параметрами:\n   - client_name: ім'я клієнта\n   - cake_count: кількість\n   - requested_date: дата\n   - total_price: сума\n   - cake_type: назва торта\n   - doc_template_id: ID шаблону з результату КРОКУ 2\n\n   КРОК 4: Відправ клієнту повідомлення з посиланням на КП\n\n   ВАЖЛИВО: Виконуй всі 4 кроки НАВІТЬ ЯКЩО один з них повернув помилку. Не пиши КП вручну — завжди викликай tool_generate_kp.\n\n4. ЗБЕРЕЖЕННЯ КЛІЄНТА:\n   - В кінці розмови виклич tool_save_client з усіма даними клієнта\n   - Зберігай: ім'я, телефон, алергії, уподобання, день народження\n\nВАЖЛИВІ ПРАВИЛА:\n- Ніколи не пиши КП вручну — тільки через tool_generate_kp\n- Завжди питай про алергії якщо клієнт новий\n- Якщо питання не про замовлення — відповідай як консультант\n- Ніколи не кажи що ти бот якщо не запитують\n- Спілкуйся тільки українською мовою\n- Завжди використовуй поточний рік при записі дат замовлень\n- Формат дати: YYYY-MM-DD де YYYY = поточний рік з ПОТОЧНА ДАТА"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        608,
+        0
+      ],
+      "id": "7523e82b-4563-480d-a757-3b69b6779178",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-haiku-4.5",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        224,
+        224
+      ],
+      "id": "f9886903-3443-40b5-a937-970c7ec0a73c",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "TIYR5zaiU2pQJKJ7",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('When Executed by Another Workflow').item.json.chat_id }}",
+        "contextWindowLength": 50
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        336,
+        288
+      ],
+      "id": "d986d81c-6fb1-4b9a-b35d-d166e4f07455",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "description": "Використовуй в кінці розмови щоб зберегти або оновити дані клієнта.",
+        "workflowId": {
+          "__rl": true,
+          "value": "nRqCn0DhBrbJDjY0",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/nRqCn0DhBrbJDjY0",
+          "cachedResultName": "tool_save_client"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "chat_id": "={{ $fromAI('chat_id', 'Chat ID клієнта', 'string') }}",
+            "name ": "={{ $fromAI('name', \"Ім'я клієнта\", 'string') }}",
+            "phone": "={{ $fromAI('phone', 'Телефон клієнта', 'string') }}",
+            "allergies": "={{ $fromAI('allergies', 'Алергії клієнта', 'string') }}",
+            "preferences": "={{ $fromAI('preferences', 'Побажання клієнта', 'string') }}",
+            "birthday": "={{ $fromAI('birthday', 'День народження', 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "chat_id",
+              "displayName": "chat_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "name ",
+              "displayName": "name ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "allergies",
+              "displayName": "allergies",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "preferences",
+              "displayName": "preferences",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "birthday",
+              "displayName": "birthday",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        592,
+        240
+      ],
+      "id": "8859c329-de2e-4d15-a756-e495762cd5ad",
+      "name": "Call 'tool_save_client'"
+    },
+    {
+      "parameters": {
+        "description": "Використовуй коли клієнт питає про меню або хоче обрати торт.",
+        "workflowId": {
+          "__rl": true,
+          "value": "sIRgQriSGA4KTKDu",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/sIRgQriSGA4KTKDu",
+          "cachedResultName": "tool_get_cake_types"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        720,
+        208
+      ],
+      "id": "a70d348e-a64a-4775-9778-ef485cf6932f",
+      "name": "Call 'tool_get_cake_types'"
+    },
+    {
+      "parameters": {
+        "description": "Використовуй щоб перевірити чи вільна дата для замовлення.",
+        "workflowId": {
+          "__rl": true,
+          "value": "nzGY9oMwUIJRhonO",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/nzGY9oMwUIJRhonO",
+          "cachedResultName": "tool_check_capacity"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "requested_date": "=requested_date ={{ $fromAI('requested_date', 'Дата замовлення', 'string') }}"
+          },
+          "matchingColumns": [
+            "requested_date"
+          ],
+          "schema": [
+            {
+              "id": "requested_date",
+              "displayName": "requested_date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        848,
+        240
+      ],
+      "id": "6aa3ff93-10bf-4e77-a852-ea01f222eda1",
+      "name": "Call 'tool_check_capacity'"
+    },
+    {
+      "parameters": {
+        "description": "Використовуй після підтвердження замовлення клієнтом.",
+        "workflowId": {
+          "__rl": true,
+          "value": "Ptm4saqwGqB75hdE",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/Ptm4saqwGqB75hdE",
+          "cachedResultName": "tool_create_order"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "cake_count": "={{ $fromAI('cake_count', 'Кількість тортів', 'number') }}",
+            "chat_id ": "={{ $fromAI('chat_id', 'Chat ID клієнта', 'string') }}",
+            "client_name": "={{ $fromAI('client_name', \"Ім'я клієнта\", 'string') }}",
+            "requested_date": "={{ $fromAI('requested_date', 'Дата замовлення', 'string') }}",
+            "cake_type": "={{ $fromAI('cake_type', 'Тип торта', 'string') }}",
+            "total_price ": "={{ $fromAI('total_price', 'Загальна сума', 'number') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "chat_id ",
+              "displayName": "chat_id ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "client_name",
+              "displayName": "client_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "cake_count",
+              "displayName": "cake_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number",
+              "removed": false
+            },
+            {
+              "id": "requested_date",
+              "displayName": "requested_date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "cake_type",
+              "displayName": "cake_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "total_price ",
+              "displayName": "total_price ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        992,
+        208
+      ],
+      "id": "7b7beb6c-9c72-4196-943d-e48029ea45ed",
+      "name": "Call 'tool_create_order'"
+    },
+    {
+      "parameters": {
+        "description": "=Використовуй після створення замовлення щоб згенерувати КП.",
+        "workflowId": {
+          "__rl": true,
+          "value": "2ekPCkSpv9hTSy14",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/2ekPCkSpv9hTSy14",
+          "cachedResultName": "tool_generate_kp"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "cake_count": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('cake_count', ``, 'number') }}",
+            "total_price": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('total_price', ``, 'number') }}",
+            "client_name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('client_name', ``, 'string') }}",
+            "requested_date": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('requested_date', ``, 'string') }}",
+            "cake_type ": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('cake_type_', ``, 'string') }}",
+            "doc_template_id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('doc_template_id', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "client_name",
+              "displayName": "client_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "cake_count",
+              "displayName": "cake_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            },
+            {
+              "id": "requested_date",
+              "displayName": "requested_date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "total_price",
+              "displayName": "total_price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            },
+            {
+              "id": "cake_type ",
+              "displayName": "cake_type ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "doc_template_id",
+              "displayName": "doc_template_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        1136,
+        240
+      ],
+      "id": "2e749e8d-4b5b-493e-9696-10e0e6c8840d",
+      "name": "Call 'tool_generate_kp'"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('When Executed by Another Workflow').item.json.chat_id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        960,
+        0
+      ],
+      "id": "33eafa94-d243-4321-9102-5df64c7e1099",
+      "name": "Send Response to Client",
+      "webhookId": "5e843a24-e387-4d05-8b99-4100583ad99d",
+      "credentials": {
+        "telegramApi": {
+          "id": "GwAzFoHHrtAfGt6w",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "Використовуй коли потрібно отримати дані клієнта на початку розмови. Передай chat_id клієнта.",
+        "workflowId": {
+          "__rl": true,
+          "value": "L1gTpDEPGtEKXGM0",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/L1gTpDEPGtEKXGM0",
+          "cachedResultName": "tool_get_client"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "chat_id": "={{ $fromAI('chat_id', 'Chat ID клієнта', 'string') }} "
+          },
+          "matchingColumns": [
+            "chat_id"
+          ],
+          "schema": [
+            {
+              "id": "chat_id",
+              "displayName": "chat_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        480,
+        208
+      ],
+      "id": "d3cb0fc4-dbf2-4d04-a957-c9be4cf4d1b0",
+      "name": "Call 'tool_get_client'"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'tool_save_client'": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'tool_get_cake_types'": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'tool_check_capacity'": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'tool_create_order'": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'tool_generate_kp'": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send Response to Client",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'tool_get_client'": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "Dik7xDMT34c2wPOY",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "bb179ce7-43c4-4b7a-9844-7f38ae3d1927",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f6e8d2e59f7b88cfcf064ed164493d5859022d1ab8f15aa5d7cd1faf1c0e639c"
+  },
+  "id": "xPloNAkhbpDNPGCe",
+  "tags": []
+}

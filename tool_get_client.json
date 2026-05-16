@@ -1,0 +1,95 @@
+{
+  "name": "tool_get_client",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "chat_id"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "447d84ca-714a-4b00-bd0b-9300997313d1",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1rM5VHtWYRG0PtTMl9CNhOP6iOyOYAerKMI3o-X6MS68",
+          "mode": "list",
+          "cachedResultName": "CRM Кондитерська",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rM5VHtWYRG0PtTMl9CNhOP6iOyOYAerKMI3o-X6MS68/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "clients",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rM5VHtWYRG0PtTMl9CNhOP6iOyOYAerKMI3o-X6MS68/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "chat_id",
+              "lookupValue": "={{ $json.chat_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        208,
+        0
+      ],
+      "id": "47e7cde1-bc9d-456f-9675-b0a8fcf4c0e6",
+      "name": "Get Client",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "SzlUfd50Vd8nIlPp",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Get Client",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "Dik7xDMT34c2wPOY",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "af86cd46-47a8-48ce-b743-25bdf11716c1",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f6e8d2e59f7b88cfcf064ed164493d5859022d1ab8f15aa5d7cd1faf1c0e639c"
+  },
+  "id": "L1gTpDEPGtEKXGM0",
+  "tags": []
+}

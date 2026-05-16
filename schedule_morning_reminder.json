@@ -1,0 +1,155 @@
+{
+  "name": "schedule_morning_reminder",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "1c016c74-c60d-4cc8-a9f9-c9580170c20c",
+      "name": "Every Morning 9:00"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1rM5VHtWYRG0PtTMl9CNhOP6iOyOYAerKMI3o-X6MS68",
+          "mode": "list",
+          "cachedResultName": "CRM Кондитерська",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rM5VHtWYRG0PtTMl9CNhOP6iOyOYAerKMI3o-X6MS68/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2104090502,
+          "mode": "list",
+          "cachedResultName": "orders",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rM5VHtWYRG0PtTMl9CNhOP6iOyOYAerKMI3o-X6MS68/edit#gid=2104090502"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "requested_date",
+              "lookupValue": "={{ $now.toFormat('yyyy-MM-dd') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        224,
+        0
+      ],
+      "id": "715a660f-9f99-445b-9271-b54ee500451d",
+      "name": "Get Today Orders",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "SzlUfd50Vd8nIlPp",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const orders = $input.all();\nconst date = $now.toFormat('yyyy-MM-dd');\n\nif (!orders || orders[0].json.requested_date === undefined) {\n  return [{\n    json: {\n      message: `🌅 Доброго ранку!\\n\\nНа сьогодні (${date}) замовлень немає.\\n\\nГарного дня! 🍰`\n    }\n  }];\n}\n\nlet text = `🌅 Доброго ранку! Замовлення на сьогодні (${date}):\\n\\n`;\nlet total = 0;\n\norders.forEach((order, index) => {\n  const o = order.json;\n  text += `${index + 1}. ${o.client_name} — ${o.cake_count} шт, ${o.total_price} грн, статус: ${o.status}\\n`;\n  total += Number(o.total_price) || 0;\n});\n\ntext += `\\n💰 Загальна виручка: ${total} грн\\nУдачного дня! 🍰`;\n\nreturn [{ json: { message: text } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        0
+      ],
+      "id": "3898bd05-79b7-4f4b-bae7-b6de837c2c63",
+      "name": "Format Message"
+    },
+    {
+      "parameters": {
+        "chatId": "7865617312",
+        "text": "={{ $json.message }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        672,
+        0
+      ],
+      "id": "73b28a0a-40b2-49fc-bc99-d4b74419dd58",
+      "name": "Send Morning Report",
+      "webhookId": "15ae3767-63c2-4b03-9509-6a98f21c4b1b",
+      "credentials": {
+        "telegramApi": {
+          "id": "GwAzFoHHrtAfGt6w",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Every Morning 9:00": {
+      "main": [
+        [
+          {
+            "node": "Get Today Orders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Today Orders": {
+      "main": [
+        [
+          {
+            "node": "Format Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Message": {
+      "main": [
+        [
+          {
+            "node": "Send Morning Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "Dik7xDMT34c2wPOY",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "93298881-40b0-4b28-b59a-e4c3a10268ae",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f6e8d2e59f7b88cfcf064ed164493d5859022d1ab8f15aa5d7cd1faf1c0e639c"
+  },
+  "id": "CIiK0L7BZCbvEctk",
+  "tags": []
+}

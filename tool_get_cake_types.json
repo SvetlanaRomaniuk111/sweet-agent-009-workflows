@@ -1,0 +1,81 @@
+{
+  "name": "tool_get_cake_types",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "fdda7f34-06a2-4a4f-86a1-dfd56ca4bc6f",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1rM5VHtWYRG0PtTMl9CNhOP6iOyOYAerKMI3o-X6MS68",
+          "mode": "list",
+          "cachedResultName": "CRM Кондитерська",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rM5VHtWYRG0PtTMl9CNhOP6iOyOYAerKMI3o-X6MS68/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1232044511,
+          "mode": "list",
+          "cachedResultName": "cake_types",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rM5VHtWYRG0PtTMl9CNhOP6iOyOYAerKMI3o-X6MS68/edit#gid=1232044511"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        224,
+        0
+      ],
+      "id": "a42f28b2-621c-4f22-a78f-b87b32d6e6ca",
+      "name": "Get Cake Types",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "SzlUfd50Vd8nIlPp",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Get Cake Types",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "Dik7xDMT34c2wPOY",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "469d3f09-c81d-4f54-9057-015d6381e4f2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f6e8d2e59f7b88cfcf064ed164493d5859022d1ab8f15aa5d7cd1faf1c0e639c"
+  },
+  "id": "sIRgQriSGA4KTKDu",
+  "tags": []
+}

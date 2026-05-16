@@ -1,0 +1,88 @@
+{
+  "name": "error_handler",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "9208af41-152e-4a52-9c35-cf4f71315f9b",
+      "name": "Error Trigger"
+    },
+    {
+      "parameters": {
+        "jsCode": "const error = $json.execution.error;\nconst workflow = $json.workflow.name;\nconst time = new Date().toLocaleString('uk-UA');\n\nreturn [{\n  json: {\n    message: `⚠️ Помилка в системі!\\n\\nWorkflow: ${workflow}\\nЧас: ${time}\\nПомилка: ${error.message}`\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "3a0649fe-561d-4904-8af1-cc669c6782bf",
+      "name": "Format Error"
+    },
+    {
+      "parameters": {
+        "chatId": "7865617312",
+        "text": "={{ $json.message }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "3ec89b32-6f7a-44c1-92ef-7687bb714963",
+      "name": "Notify Owner About Error",
+      "webhookId": "4b2185b8-6d5a-4450-b1d1-a0165a70efb0",
+      "credentials": {
+        "telegramApi": {
+          "id": "GwAzFoHHrtAfGt6w",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Format Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Error": {
+      "main": [
+        [
+          {
+            "node": "Notify Owner About Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "90fb85c7-1b2a-46f9-a796-7a1cdf6734bc",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f6e8d2e59f7b88cfcf064ed164493d5859022d1ab8f15aa5d7cd1faf1c0e639c"
+  },
+  "id": "Dik7xDMT34c2wPOY",
+  "tags": []
+}

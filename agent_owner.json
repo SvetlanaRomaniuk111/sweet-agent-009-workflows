@@ -1,0 +1,410 @@
+{
+  "name": "agent_owner",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "chat_id"
+            },
+            {
+              "name": "message"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "a737a1ac-c4e2-4857-b8b4-f918d5d67bbf",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message }}",
+        "options": {
+          "systemMessage": "=ПОТОЧНА ДАТА: {{ $now.toFormat('yyyy-MM-dd') }}\n\nТи — персональний AI-асистент власника кондитерської \"Солодкий Агент 009\".\nСпілкуєшся з підприємцем в Telegram українською мовою.\n\nТВОЇ МОЖЛИВОСТІ:\n- Показати замовлення на будь-яку дату\n- Оновити статус замовлення\n- Перевірити стан складу інгредієнтів\n- Оновити кількість інгредієнтів на складі\n- Підрахувати виручку\n\nЛОГІКА РОБОТИ:\n- Коли отримуєш будь-яке повідомлення — ВІДРАЗУ викликай відповідний tool без уточнень\n- \"Які замовлення на сьогодні/завтра/[дата]?\" → tool_get_orders_by_date з датою YYYY-MM-DD\n- \"Позначити замовлення виконаним/скасованим\" → tool_update_order_status\n- \"Що на складі?\" або \"Скільки [інгредієнт]?\" → tool_get_inventory\n- \"Купив/додав X кг [інгредієнт]\" → tool_update_inventory\n- Ніколи не питай уточнень — дій одразу\n\nСТИЛЬ СПІЛКУВАННЯ:\n- Чіткий і діловий\n- Короткі відповіді\n- Завжди українською мовою\n\nФОРМАТ ВІДПОВІДІ:\n- Тільки читабельний текст українською — ніякого JSON, коду чи технічних символів\n- Якщо замовлень немає → \"На [дата] замовлень немає\"\n- Якщо є замовлення → список у форматі:\n  📋 Замовлення на [дата]:\n  1. [client_name] — [cake_count] шт, [total_price] грн, статус: [status]\n- Якщо склад → показуй у форматі:\n  📦 Склад:\n  - [інгредієнт]: [кількість] [одиниця]\n\nКРИТИЧНО ВАЖЛИВО: Ніколи не пиши \"Calling tool...\" або будь-який технічний текст. Якщо отримав результат від tool — відповідай тільки фінальним результатом українською мовою."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        480,
+        0
+      ],
+      "id": "0678b38e-c3bb-48c8-a7fa-b9353539eeef",
+      "name": "AI Agent Owner"
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-haiku-4.5",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        224,
+        224
+      ],
+      "id": "3bf0ef51-529f-4dc3-9dd4-27c20427abe8",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "TIYR5zaiU2pQJKJ7",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('When Executed by Another Workflow').item.json.chat_id }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        352,
+        224
+      ],
+      "id": "cbce23eb-6df8-41f5-a8bd-befa823b574e",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "description": "Використовуй цей інструмент коли власник запитує про замовлення на конкретну дату. Наприклад: \"які замовлення на сьогодні\", \"покажи замовлення на завтра\", \"що є на 15 травня\". Передай дату у форматі YYYY-MM-DD.",
+        "workflowId": {
+          "__rl": true,
+          "value": "tOgX9V2mUD5Wy1Dp",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/tOgX9V2mUD5Wy1Dp",
+          "cachedResultName": "tool_get_orders_by_date"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "date": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('date', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "date"
+          ],
+          "schema": [
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        480,
+        272
+      ],
+      "id": "048e2cea-ebb4-45ec-8b47-3017e54cfa15",
+      "name": "tool_get_orders_by_date"
+    },
+    {
+      "parameters": {
+        "description": "Використовуй цей інструмент коли власник хоче змінити статус замовлення. order_id — це ТОЧНЕ ІМ'Я клієнта (наприклад \"Олексій\"), не номер. status — новий статус (виконано, скасовано, new).",
+        "workflowId": {
+          "__rl": true,
+          "value": "5AFzwnwxNzsH3NxV",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/5AFzwnwxNzsH3NxV",
+          "cachedResultName": "tool_update_order_status"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "order_id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('order_id', ``, 'string') }}",
+            "status": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('status', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "order_id",
+              "displayName": "order_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        608,
+        224
+      ],
+      "id": "68a7f9f1-5afc-46b0-a78a-faa76c6f2917",
+      "name": "tool_update_order_status"
+    },
+    {
+      "parameters": {
+        "description": "Використовуй цей інструмент коли власник питає про склад інгредієнтів. Наприклад: \"скільки борошна\", \"що є на складі\", \"перевір цукор\". Передай назву інгредієнта.\nЯкщо власник питає про весь склад — передай ingredient як \"all\" або залиш порожнім",
+        "workflowId": {
+          "__rl": true,
+          "value": "ZM5qmAqfK2I5MYRc",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/ZM5qmAqfK2I5MYRc",
+          "cachedResultName": "tool_get_inventory"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ingredient": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('ingredient', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "ingredient"
+          ],
+          "schema": [
+            {
+              "id": "ingredient",
+              "displayName": "ingredient",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        736,
+        272
+      ],
+      "id": "0b6b4fe4-fcec-4995-9b6d-7b07030e8b72",
+      "name": "tool_get_inventory"
+    },
+    {
+      "parameters": {
+        "description": "Використовуй цей інструмент коли власник повідомляє про поповнення складу. Наприклад: \"купив 5 кг борошна\", \"додай 10 літрів молока\", \"поповнив цукор на 3 кг\". Передай назву інгредієнта та нову кількість.",
+        "workflowId": {
+          "__rl": true,
+          "value": "olVqwxH2rwDwWKNj",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/olVqwxH2rwDwWKNj",
+          "cachedResultName": "tool_update_inventory"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "quantity": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('quantity', ``, 'number') }}",
+            "ingredient ": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('ingredient_', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ingredient ",
+              "displayName": "ingredient ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "quantity",
+              "displayName": "quantity",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        864,
+        224
+      ],
+      "id": "861af504-a527-4f0a-8ae5-c35741ab043b",
+      "name": "tool_update_inventory"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('When Executed by Another Workflow').first().json.chat_id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        832,
+        0
+      ],
+      "id": "f941e436-00ee-4de3-b770-f1389fbd2e2b",
+      "name": "Send a text message",
+      "webhookId": "7d2f1e66-c436-4b56-8600-7c2485f09065",
+      "credentials": {
+        "telegramApi": {
+          "id": "GwAzFoHHrtAfGt6w",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "chat_id": 7865617312,
+          "message": "купив ще 3 кг цукру"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "AI Agent Owner",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent Owner",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent Owner",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "tool_get_orders_by_date": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent Owner",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "tool_update_order_status": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent Owner",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "tool_get_inventory": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent Owner",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "tool_update_inventory": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent Owner",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent Owner": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "Dik7xDMT34c2wPOY",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "71d08154-efa8-4119-81af-322d3c5f5b0e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f6e8d2e59f7b88cfcf064ed164493d5859022d1ab8f15aa5d7cd1faf1c0e639c"
+  },
+  "id": "N1R0e2MLhIXYVUS0",
+  "tags": []
+}

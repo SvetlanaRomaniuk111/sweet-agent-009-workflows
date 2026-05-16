@@ -1,0 +1,250 @@
+{
+  "name": "tool_generate_kp",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "client_name"
+            },
+            {
+              "name": "cake_count",
+              "type": "number"
+            },
+            {
+              "name": "requested_date"
+            },
+            {
+              "name": "total_price",
+              "type": "number"
+            },
+            {
+              "name": "cake_type"
+            },
+            {
+              "name": "doc_template_id"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "ff8ce3d5-6c70-4fb2-8ec1-c4f32268e9cb",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1rM5VHtWYRG0PtTMl9CNhOP6iOyOYAerKMI3o-X6MS68",
+          "mode": "list",
+          "cachedResultName": "CRM Кондитерська",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rM5VHtWYRG0PtTMl9CNhOP6iOyOYAerKMI3o-X6MS68/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1232044511,
+          "mode": "list",
+          "cachedResultName": "cake_types",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rM5VHtWYRG0PtTMl9CNhOP6iOyOYAerKMI3o-X6MS68/edit#gid=1232044511"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "name",
+              "lookupValue": "={{ $('When Executed by Another Workflow').item.json.cake_type }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        0,
+        -224
+      ],
+      "id": "adf813c0-d5fb-47da-b052-36385d50e1b1",
+      "name": "Get Template ID",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "SzlUfd50Vd8nIlPp",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "copy",
+        "fileId": {
+          "__rl": true,
+          "value": "1SewsOAG2j1Eu95KLZtGiGaSmoyTddgokcjzklGFvLHw",
+          "mode": "id"
+        },
+        "name": "={{ $('When Executed by Another Workflow').item.json.doc_template_id }}",
+        "sameFolder": false,
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1xeH-mgN7tQV7cfcXaFuUo7tcjs3GfsdK",
+          "mode": "list",
+          "cachedResultName": "Солодкий Агент 009 — Хакатон",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1xeH-mgN7tQV7cfcXaFuUo7tcjs3GfsdK"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        224,
+        0
+      ],
+      "id": "abafd2c1-5899-49b1-90e3-a556ce2b8e5b",
+      "name": "КП Клієнтів",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "XGtWiS2wmZkwV4Hm",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "replaceAll",
+              "text": "{{date}}",
+              "replaceText": "={{ $now.toFormat('dd.MM.yyyy') }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{client_name}}",
+              "replaceText": "={{ $('When Executed by Another Workflow').item.json.client_name }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{cake_count}}",
+              "replaceText": "={{ $('When Executed by Another Workflow').item.json.cake_count.toString() }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{total_price}}",
+              "replaceText": "={{ $('When Executed by Another Workflow').item.json.total_price.toString() }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{requested_date}}",
+              "replaceText": "={{ $('When Executed by Another Workflow').item.json.requested_date }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        448,
+        0
+      ],
+      "id": "ade44ebf-d2f0-4b29-9da5-cbdda6194057",
+      "name": "Fill Template",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "TjJHHAhFf7ycbzrT",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e0dd078b-1211-48df-ba91-b949c210e222",
+              "name": "kp_link",
+              "value": "=https://docs.google.com/document/d/{{ $json.documentId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        672,
+        0
+      ],
+      "id": "c7a43b12-0b2d-423e-88ab-fcddcbf1fa6d",
+      "name": "Set KP Link"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "КП Клієнтів",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Template ID": {
+      "main": [
+        []
+      ]
+    },
+    "КП Клієнтів": {
+      "main": [
+        [
+          {
+            "node": "Fill Template",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fill Template": {
+      "main": [
+        [
+          {
+            "node": "Set KP Link",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "Dik7xDMT34c2wPOY",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "f2db26b9-5d2f-480d-95cf-df5ff6274e90",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f6e8d2e59f7b88cfcf064ed164493d5859022d1ab8f15aa5d7cd1faf1c0e639c"
+  },
+  "id": "2ekPCkSpv9hTSy14",
+  "tags": []
+}
