@@ -158,7 +158,7 @@ AI-агент, який **повністю замінює адміністрат
 | ✅ GitHub-репозиторій | Готово | [sweet-agent-009-workflows](https://github.com/SvetlanaRomaniuk111/sweet-agent-009-workflows) |
 | ✅ Задеплоєний прототип | Готово | [@sweet_agent_009_bot](https://t.me/sweet_agent_009_bot] |
 | 🎥 Відеодемо | Готово | [Google Drive] (https://drive.google.com/file/d/1bg3VKlMmB1Je1xZi083Oy8V4WOSoTfK8/view?usp=sharing) |
-| 📊 Pitch-презентація | Готово | [Google Drive](https://drive.google.com/file/d/1D54ekCJNOTCUACTeV6jv5L6o0W9QyQLM/view?usp=sharing) |
+| 📊 Pitch-презентація | Готово | [Google Drive] (https://drive.google.com/file/d/1D54ekCJNOTCUACTeV6jv5L6o0W9QyQLM/view?usp=sharing) |
 
 ---
 
@@ -167,7 +167,7 @@ AI-агент, який **повністю замінює адміністрат
 | Ім'я | Роль |
 |------|------|
 | Косовець Артур | AI Agent Developer & Prompt Engineer — промпт-інжиніринг, розробка n8n workflow |
-| Романюк Світлана | AI Content Maker — розробка презентації, генерування фото продукту, оформлення GitHub та README |
+| Романюк Світлана | AI Content Maker — розробка презентації, генерування фото та відео продукту, оформлення GitHub та README |
 | Одерій Максим | UX/UI Designer — дизайн інтерфейсів, створення презентації |
 | Затишна Неля | Data Analytics — підготовка даних та бізнес-логіки для автоматизації обробки замовлень |
 | Кордюк Христина | Data Analytics — ринкова аналітика, опитування та дослідження користувацького досвіду |
