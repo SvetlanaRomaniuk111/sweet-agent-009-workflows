@@ -157,7 +157,7 @@ AI-агент, який **повністю замінює адміністрат
 |---|---|---|
 | ✅ GitHub-репозиторій | Готово | [sweet-agent-009-workflows](https://github.com/SvetlanaRomaniuk111/sweet-agent-009-workflows) |
 | ✅ Задеплоєний прототип | Готово | [@sweet_agent_009_bot](https://t.me/sweet_agent_009_bot) |
-| 🎥 Відеодемо | Потрібно зробити | Скринкаст 3-7 хв |
+| 🎥 Відеодемо | Потрібно зробити | [https://drive.google.com/file/d/1bg3VKlMmB1Je1xZi083Oy8V4WOSoTfK8/view?usp=sharing] |
 | 📊 Pitch-презентація | Готово | [Файл у workspace](https://github.com/SvetlanaRomaniuk111/sweet-agent-009-workflows) |
 
 ---
